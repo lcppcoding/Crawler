@@ -13,24 +13,24 @@ module ArticlesHelper
   TEXT_NODE_SELECTOR = '//div[@id="parent-fieldname-text"]'.freeze # keep raw, hydrate to html?
 
   def update_articles(source)
-    crawler(URLS[source], FOLLOWUP_SELECTORS[source])
+    crawler(URLS[source.to_sym], FOLLOWUP_SELECTORS[source.to_sym], source)
   end
 
   private
 
-  def crawler(url, followup_selector)
+  def crawler(url, followup_selector, source)
     # An initial url and xpath selector for links to follow.
     # Parse url
-    doc = get_doc(url)
+    parsed_page = get_doc(url)
     # Get links to the actual news
-    articles_links = get_list(doc, followup_selector)
+    articles_links = get_list(parsed_page, followup_selector)
     # Access each link and get the data we need
     data_array = extract_article_data(articles_links)
     # Build
-    build_articles(url, data_array)
+    build_articles(source, data_array)
     # Fire this again on the next page
-    next_page = get_element(doc, PAGINATION_SELECTOR)&.text
-    crawler(next_page, followup_selector) if next_page
+    next_page = get_element(parsed_page, PAGINATION_SELECTOR)&.text
+    crawler(next_page, followup_selector, source) if next_page
   end
 
   def extract_article_data(articles_links)
@@ -41,15 +41,15 @@ module ArticlesHelper
       publish_date = get_element(article_page, PUBLISH_DATE_SELECTOR).text
       content = get_element(article_page, TEXT_NODE_SELECTOR).text
       # Map each group of attributes to a hash, which will be an element in the returned array
-      { url: link, title: title, publish_date: publish_date, content: content }
+      { url: link.value, title: title, publish_date: publish_date, content: content }
     end
   end
 
   def build_articles(source, data_array)
     data_array.each do |attrs|
       # TODO: Bounce early if url in Article.all.urls (or whatever the syntax is)
-      Article.create(title: attrs.title, publish_date: clean_date(attrs.publish_date),
-                     content: clean_content(attrs.content), collect_date: Time.now, source: source)
+      Article.create(title: attrs[:title], publish_date: clean_date(attrs[:publish_date]),
+                     content: clean_content(attrs[:content]), collect_date: Time.now, source: source, url: attrs[:url])
     end
   end
 
