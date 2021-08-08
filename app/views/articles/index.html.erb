@@ -3,7 +3,7 @@
   <%= form.label :query, "Search title for:" %>
   <%= form.text_field :query, value: params[:query] %>
   <%= form.label :source, 'Choose news source' %>
-  <%= form.select :source, ['Cultura', 'Desenvolvimento Social', ''], selected: params[:source] %>
+  <%= form.select :source, ['', 'Cultura', 'Desenvolvimento Social'], selected: params[:source] %>
   <%= form.submit "Search" %>
 <% end %>
 
