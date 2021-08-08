@@ -45,7 +45,7 @@ module ArticlesHelper
       publish_date = get_element(article_page, PUBLISH_DATE_SELECTOR).text
       content = get_element(article_page, TEXT_NODE_SELECTOR).text
       # Map each group of attributes to a hash, which will be an element in the returned array
-      { url: link.value, title: title, publish_date: publish_date, content: content }
+      { url: link, title: title, publish_date: publish_date, content: content }
     end
   end
 
