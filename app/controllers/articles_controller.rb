@@ -9,7 +9,7 @@ class ArticlesController < ApplicationController
 
   def fetch_articles
     # TODO: Get source from params and call helper. Do this in the background: SLOW SLOW
-    update_articles('Cultura')
-    update_articles('Desenvolvimento Social')
+    FetchNewsJob.perform_later update_articles('Cultura')
+    FetchNewsJob.perform_later update_articles('Desenvolvimento Social')
   end
 end
