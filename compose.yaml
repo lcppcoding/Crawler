@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_HOST: database
+      DATABASE_HOST: db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: some-password
       POSTGRES_DB: dsb_news_development
