@@ -3,10 +3,10 @@ module ArticlesHelper
   require 'open-uri'
   require 'time'
 
-  URLS = ['https://www.gov.br/turismo/pt-br/secretaria-especial-da-cultura/assuntos/noticias'.freeze,
-          'https://www.gov.br/cidadania/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social'.freeze].freeze
-  FOLLOWUP_SELECTORS = ['//article//header//span//a[@class=" state-published url"]/@href'.freeze,
-                        '//article//div//h2//a[@class="summary url"]/@href'.freeze].freeze
+  URLS = { 'Cultura': 'https://www.gov.br/turismo/pt-br/secretaria-especial-da-cultura/assuntos/noticias'.freeze,
+           'Desenvolvimento Social': 'https://www.gov.br/cidadania/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social'.freeze }.freeze
+  FOLLOWUP_SELECTORS = { 'Cultura': '//article//header//span//a[@class=" state-published url"]/@href'.freeze,
+                         'Desenvolvimento Social': '//article//div//h2//a[@class="summary url"]/@href'.freeze }.freeze
   PAGINATION_SELECTOR = '//ul[@class="paginacao listingBar"]//li//a[@class="proximo"]/@href'.freeze
   TITLE_SELECTOR = '//article//h1[@class="documentFirstHeading"]'.freeze
   PUBLISH_DATE_SELECTOR = '//div[@class="documentByLine"]//span[@class="documentPublished"]//span[@class="value"]'.freeze
