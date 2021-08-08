@@ -2,6 +2,7 @@ module ArticlesHelper
   require 'nokogiri'
   require 'open-uri'
   require 'time'
+  require 'set'
 
   URLS = { 'Cultura': 'https://www.gov.br/turismo/pt-br/secretaria-especial-da-cultura/assuntos/noticias'.freeze,
            'Desenvolvimento Social': 'https://www.gov.br/cidadania/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social'.freeze }.freeze
@@ -13,6 +14,7 @@ module ArticlesHelper
   TEXT_NODE_SELECTOR = '//div[@id="parent-fieldname-text"]'.freeze # keep raw, hydrate to html?
 
   def update_articles(source)
+    @persisted = Article.select('url').map(&:url).to_set
     crawler(URLS[source.to_sym], FOLLOWUP_SELECTORS[source.to_sym], source)
   end
 
@@ -24,8 +26,10 @@ module ArticlesHelper
     parsed_page = get_doc(url)
     # Get links to the actual news
     articles_links = get_list(parsed_page, followup_selector)
+    # Filter list so we only deal with new URLs
+    filtered_links = filter_links(articles_links)
     # Access each link and get the data we need
-    data_array = extract_article_data(articles_links)
+    data_array = extract_article_data(filtered_links)
     # Build
     build_articles(source, data_array)
     # Fire this again on the next page
@@ -33,10 +37,10 @@ module ArticlesHelper
     crawler(next_page, followup_selector, source) if next_page
   end
 
-  def extract_article_data(articles_links)
-    articles_links.map do |link|
+  def extract_article_data(filtered_links)
+    filtered_links.map do |link|
       # Access the page for the specific link. This is the page with the data we want
-      article_page = get_doc(link.value)
+      article_page = get_doc(link)
       title = get_element(article_page, TITLE_SELECTOR).text
       publish_date = get_element(article_page, PUBLISH_DATE_SELECTOR).text
       content = get_element(article_page, TEXT_NODE_SELECTOR).text
@@ -47,7 +51,6 @@ module ArticlesHelper
 
   def build_articles(source, data_array)
     data_array.each do |attrs|
-      # TODO: Bounce early if url in Article.all.urls (or whatever the syntax is)
       Article.create(title: attrs[:title], publish_date: clean_date(attrs[:publish_date]),
                      content: clean_content(attrs[:content]), collect_date: Time.now, source: source, url: attrs[:url])
     end
@@ -75,5 +78,9 @@ module ArticlesHelper
 
   def clean_date(date)
     Time.parse(date)
+  end
+
+  def filter_links(arr)
+    arr.map(&:value).to_set - @persisted
   end
 end
