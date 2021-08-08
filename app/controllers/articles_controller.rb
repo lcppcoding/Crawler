@@ -3,6 +3,8 @@ class ArticlesController < ApplicationController
 
   def index
     @articles = Article.all
+    @articles = @articles.send(params[:source]) if params[:source].present?
+    @articles = @articles.query(params[:query]) if params[:query].present?
   end
 
   def fetch_articles
