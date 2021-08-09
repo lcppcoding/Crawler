@@ -1,6 +1,4 @@
 module ArticlesHelper
-  require 'nokogiri'
-  require 'open-uri'
   require 'time'
   require 'set'
 
