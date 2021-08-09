@@ -65,7 +65,7 @@ module ArticlesHelper
     }
     
     attempt_count = 0
-    max_attempts  = 3
+    max_attempts  = 5
     sleep_time = 3
     begin
       attempt_count += 1
@@ -73,11 +73,11 @@ module ArticlesHelper
       content = URI.open(url, openuri_params).read
     rescue OpenURI::HTTPError => e
       # it's 404, etc. (do nothing)
-    rescue SocketError, Net::ReadTimeout => e
+    rescue SocketError, Net::ReadTimeout, Net::OpenTimeout => e
       # server can't be reached or doesn't send any respones
       puts "error: #{e}"
       sleep sleep_time
-      sleep_time * 2
+      sleep_time *= 2
       retry if attempt_count < max_attempts
     else
       # connection was successful,
