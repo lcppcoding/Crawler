@@ -29,7 +29,7 @@ RUN bundle install
 
 COPY . /app/
 
-ENTRYPOINT ["bin/rails"]
-CMD ["s", "-b", "0.0.0.0"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["bin/rails", "s", "-b", "0.0.0.0"]
 
 EXPOSE 3000
