@@ -4,6 +4,11 @@ This is the solution to a test proposed as part of a job selection process. The 
 and persist data from two government agencies web pages. The index page should display the headlines
 and allow us to filter them, with pagination.
 
+The crawler runs in the background. You can close the page
+or navigate through the results as they come in. Initial fetch could last up to 10 min. A third test on a
+different machine resulted in error due to the incredible shell script used to run migrations and kill rogue
+pid files. Stopping and restarting the container should do the trick. My bad.
+
 ## SETUP
 You can run this in three different ways. First step is always the same: clone this repo
 ```shell
