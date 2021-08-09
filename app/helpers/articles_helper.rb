@@ -57,7 +57,35 @@ module ArticlesHelper
   ######### START NOKOGIRI
 
   def get_doc(url)
-    Nokogiri::HTML(URI.open(url), nil, 'utf-8')
+    openuri_params = {
+      # set timeout durations for HTTP connection
+      # default values for open_timeout and read_timeout is 60 seconds
+      :open_timeout => 1,
+      :read_timeout => 1,
+    }
+    
+    attempt_count = 0
+    max_attempts  = 3
+    sleep_time = 3
+    begin
+      attempt_count += 1
+      puts "attempt ##{attempt_count}"
+      content = URI.open(url, openuri_params).read
+    rescue OpenURI::HTTPError => e
+      # it's 404, etc. (do nothing)
+    rescue SocketError, Net::ReadTimeout => e
+      # server can't be reached or doesn't send any respones
+      puts "error: #{e}"
+      sleep sleep_time
+      sleep_time * 2
+      retry if attempt_count < max_attempts
+    else
+      # connection was successful,
+      # content is fetched,
+      # so here we can parse content with Nokogiri,
+      # or call a helper method, etc.
+      doc = Nokogiri::HTML(content, nil, 'utf-8')
+    end
   end
 
   def get_list(doc, selector)
