@@ -1,5 +1,7 @@
 FROM ruby:3.0.2-alpine
 
+RUN gem install nokogiri
+
 RUN apk add --update --virtual \
   runtime-deps \
   postgresql-client \
