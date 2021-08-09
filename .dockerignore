@@ -1,0 +1,18 @@
+# Git
+.git
+.gitignore
+
+# Logs
+log/*
+
+# Temp files
+tmp/*
+
+# Editor stuff
+.idea/*
+
+# Node modules
+node_modules/*
+
+# JB stuff
+
